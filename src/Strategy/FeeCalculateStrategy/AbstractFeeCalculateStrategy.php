@@ -19,8 +19,8 @@ abstract class AbstractFeeCalculateStrategy implements FeeCalculateStrategyInter
 
     public function getFee(OperationInterface $operation): float
     {
-        $result = bcmul((string) $this->getAmount2Fee($operation), (string) $this->feeValue, 4);
-        return (float) bcmul($result, '1', 2);
+        $result = bcmul((string)$this->getAmount2Fee($operation), (string)$this->feeValue, 4);
+        return (float)bcmul($result, '1', 2);
     }
 
     abstract protected function getAmount2Fee(OperationInterface $operation): float;

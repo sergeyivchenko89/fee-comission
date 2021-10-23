@@ -3,3 +3,4 @@
 /vendor
 *.csv
 /phpunit.xml.dist
+/.env

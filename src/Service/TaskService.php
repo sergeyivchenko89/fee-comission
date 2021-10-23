@@ -23,7 +23,7 @@ class TaskService implements TaskServiceInterface
 
     public function __construct(
         FeeCalculateStrategyManagerInterface $feeCalculateStrategyManager,
-        StorageInterface $storage
+        StorageInterface                     $storage
     )
     {
         $this->feeCalculateStrategyManager = $feeCalculateStrategyManager;

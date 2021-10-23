@@ -23,6 +23,10 @@ class IOService implements IOServiceInterface
                 throw new FileNotFoundException($inputFileName);
             }
 
+            if (file_exists($outputFileName)) {
+                unlink($outputFileName);
+            }
+
             $this->fdInput = fopen($inputFileName, 'r');
             $this->fdOutput = fopen($outputFileName, 'a');
         } catch (Exception $e) {

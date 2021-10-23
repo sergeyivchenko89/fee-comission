@@ -14,6 +14,11 @@ class HelperService implements HelperServiceInterface
 
     protected static $instance;
 
+    protected function __construct()
+    {
+
+    }
+
     public static function get(): HelperServiceInterface
     {
         if (null === self::$instance) {
@@ -21,11 +26,6 @@ class HelperService implements HelperServiceInterface
         }
 
         return self::$instance;
-    }
-
-    protected function __construct()
-    {
-        
     }
 
     public function getFormattedDate(OperationInterface $operation, string $format): string

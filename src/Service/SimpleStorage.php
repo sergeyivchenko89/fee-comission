@@ -25,15 +25,15 @@ class SimpleStorage implements StorageInterface
         $this->dict[$this->getKey($operation)][] = $operation;
     }
 
+    public function getKey(OperationInterface $operation): string
+    {
+        return $operation->getUserId() . '|' . $operation->getOperationType();
+    }
+
     public function getRelatedOperations(OperationInterface $operation): array
     {
         $key = $this->getKey($operation);
         return $this->dict[$key] ?? [];
-    }
-
-    public function getKey(OperationInterface $operation): string
-    {
-        return $operation->getUserId() . '|'. $operation->getOperationType();
     }
 
     public function invalidate(OperationInterface $operation): void
@@ -41,7 +41,7 @@ class SimpleStorage implements StorageInterface
         $operationDate = new DateTime($operation->getDate());
 
         if (
-            !isset($this->weekStart) || 
+            !isset($this->weekStart) ||
             ($operationDate->diff($this->weekStart)->days > 7)
         ) {
             $this->dict = [];

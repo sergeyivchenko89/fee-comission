@@ -27,10 +27,10 @@ class CSVStringParser implements ParserInterface
         $parts = explode(',', $stringData);
         return new OperationItem(
             $parts[0],
-            (int) $parts[1],
+            (int)$parts[1],
             $parts[2],
             $parts[3],
-            (float) $parts[4],
+            (float)$parts[4],
             $parts[5]
         );
     }

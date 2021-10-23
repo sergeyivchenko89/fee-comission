@@ -23,12 +23,13 @@ class OperationItem implements OperationInterface
 
     public function __construct(
         string $date,
-        int $userId,
+        int    $userId,
         string $clientType,
         string $operationType,
-        float $amount,
+        float  $amount,
         string $currency
-    ) {
+    )
+    {
         $this->date = $date;
         $this->userId = $userId;
         $this->clientType = strtolower($clientType);

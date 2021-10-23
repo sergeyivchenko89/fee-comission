@@ -5,7 +5,8 @@ declare(strict_types=1);
 
 namespace SergeiIvchenko\CommissionTask\Contracts;
 
-interface FeeCalculateStrategyManagerInterface {
+interface FeeCalculateStrategyManagerInterface
+{
 
     public function addStrategy(FeeCalculateStrategyInterface $strategy): void;
 
