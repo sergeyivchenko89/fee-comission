@@ -19,6 +19,7 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-readline": "*",
+        "php-di/php-di": "^6.3",
         "psr/cache": "^1.0",
         "symfony/cache": "^5.3"
     },
