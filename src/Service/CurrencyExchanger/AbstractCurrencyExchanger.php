@@ -3,22 +3,29 @@
 namespace SergeiIvchenko\CommissionTask\Service\CurrencyExchanger;
 
 use SergeiIvchenko\CommissionTask\Contracts\CurrencyExchangerInterface;
+use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
 
 abstract class AbstractCurrencyExchanger implements CurrencyExchangerInterface
 {
-    private $baseCurrency;
+    /**
+     * @var MathServiceInterface
+     */
+    protected $mathService;
 
-    private $baseNoFee;
+    protected $baseCurrency;
 
-    public function __construct(string $baseCurrency, float $baseNoFee)
+    protected $baseNoFee;
+
+    public function __construct(MathServiceInterface $mathService, string $baseCurrency, float $baseNoFee)
     {
+        $this->mathService = $mathService;
         $this->baseCurrency = strtolower($baseCurrency);
         $this->baseNoFee = $baseNoFee;
     }
 
     public function getBaseNoFee(): float
     {
-        return 1 === bccomp((string)$this->baseNoFee, '0', 2) ? $this->baseNoFee : 0;
+        return 1 === $this->mathService->comp($this->baseNoFee, 0) ? $this->baseNoFee : 0;
     }
 
     public function getBaseCurrency(): string

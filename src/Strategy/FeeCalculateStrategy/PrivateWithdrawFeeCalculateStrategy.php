@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy;
 
 use SergeiIvchenko\CommissionTask\Contracts\CurrencyExchangerInterface;
+use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
 use SergeiIvchenko\CommissionTask\Contracts\OperationInterface;
 use SergeiIvchenko\CommissionTask\Contracts\StorageInterface;
 
@@ -21,10 +22,11 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
     public function __construct(
         StorageInterface           $storage,
         CurrencyExchangerInterface $currencyExchanger,
+        MathServiceInterface $mathService,
         float                      $feeValue
     )
     {
-        parent::__construct($feeValue);
+        parent::__construct($mathService, $feeValue);
         $this->storage = $storage;
         $this->currencyExchanger = $currencyExchanger;
     }
@@ -39,37 +41,31 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
     {
         $finishedOperations = $this->storage->getRelatedOperations($operation);
 
-        if (count($finishedOperations) > 3) {
+        if (count($finishedOperations) >= 3) {
             return $operation->getAmount();
         }
 
-        //Просуммируем предыдущие
         $amountsSum = array_reduce($finishedOperations, function (float $prevValue, OperationInterface $operation) {
-            return (float)bcadd(
-                (string)$prevValue,
-                (string)$this->currencyExchanger->convert(
+            return $this->mathService->add(
+                $prevValue,
+                $this->currencyExchanger->convert(
                     $operation->getAmount(),
                     $operation->getCurrency()
-                ),
-                2
+                )
             );
         }, 0);
 
-        // Если сумма уже более безналоговой базы, то возвращаем стандартный расчет
-        if (1 === bccomp((string)$amountsSum, (string)$this->currencyExchanger->getBaseNoFee(), 2)) {
+        if (0 < $this->mathService->comp($amountsSum, $this->currencyExchanger->getBaseNoFee())) {
             return $operation->getAmount();
         }
 
         $operationAmountInBaseCurrency = $this->currencyExchanger->convert($operation->getAmount(), $operation->getCurrency());
 
-        // Прибавим к сумме стоимость операции
-        $amountsSum = bcadd((string)$amountsSum, (string)$operationAmountInBaseCurrency, 2);
+        $amountsSum = $this->mathService->add($amountsSum, $operationAmountInBaseCurrency);
 
-        //Если результат оказался более безналоговой базы, то вычтем ее
-        $amount2Fee = bcsub((string)$amountsSum, (string)$this->currencyExchanger->getBaseNoFee(), 2);
-        $amount2Fee = (float)(1 === bccomp($amount2Fee, '0', 2) ? $amount2Fee : 0);
+        $amount2Fee = $this->mathService->sub($amountsSum, $this->currencyExchanger->getBaseNoFee());
+        $amount2Fee = (0 < $this->mathService->comp($amount2Fee, 0) ? $amount2Fee : 0);
 
-        //возвращаем конвертированый остаток
         return $this->currencyExchanger->convert($amount2Fee, $operation->getCurrency(), true);
     }
 }

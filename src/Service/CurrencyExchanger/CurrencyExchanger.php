@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SergeiIvchenko\CommissionTask\Service\CurrencyExchanger;
 
+use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -19,6 +20,7 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
 
     public function __construct(
         CacheInterface $cache,
+        MathServiceInterface $mathService,
         string         $baseCurrency,
         float          $baseNoFee,
         string         $apiUrl,
@@ -26,7 +28,7 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
         string         $apiKey
     )
     {
-        parent::__construct($baseCurrency, $baseNoFee);
+        parent::__construct($mathService, $baseCurrency, $baseNoFee);
 
         $this->cache = $cache;
         $this->apiKey = $apiKey;
@@ -37,7 +39,7 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
     function convert(float $amount, string $currency, bool $reverse = false): float
     {
         $key = $currency . '|' . $this->getBaseCurrency();
-        $value = (string)$this->cache->get($key, function (ItemInterface $item) use ($currency) {
+        $value = $this->cache->get($key, function (ItemInterface $item) use ($currency) {
 
             if ($currency === $this->getBaseCurrency()) {
                 return 1;
@@ -70,17 +72,12 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
             curl_close($ch);
 
             if (empty($result['rates'])) {
-                throw new \Exception('Пришли пустые данные.');
+                throw new \Exception('Got empty data from exchange rates service.');
             }
 
             return $result['rates'][$currency];
         });
 
-        if ($reverse) {
-            $value = bcdiv('1', $value, 4);
-        }
-
-        $result = bcmul((string)$amount, $value, 4);
-        return (float)bcmul($result, '1', 2);
+        return call_user_func_array([$this->mathService, $reverse ? 'div': 'mul'], [$amount, $value]);
     }
 }

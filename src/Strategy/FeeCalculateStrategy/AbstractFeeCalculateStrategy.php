@@ -6,21 +6,24 @@ declare(strict_types=1);
 namespace SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy;
 
 use SergeiIvchenko\CommissionTask\Contracts\FeeCalculateStrategyInterface;
+use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
 use SergeiIvchenko\CommissionTask\Contracts\OperationInterface;
 
 abstract class AbstractFeeCalculateStrategy implements FeeCalculateStrategyInterface
 {
     protected $feeValue;
 
-    public function __construct(float $feeValue)
+    protected $mathService;
+
+    public function __construct(MathServiceInterface $mathService, float $feeValue)
     {
+        $this->mathService = $mathService;
         $this->feeValue = $feeValue;
     }
 
     public function getFee(OperationInterface $operation): float
     {
-        $result = bcmul((string)$this->getAmount2Fee($operation), (string)$this->feeValue, 4);
-        return (float)bcmul($result, '1', 2);
+        return $this->mathService->mul($this->getAmount2Fee($operation), $this->feeValue);
     }
 
     abstract protected function getAmount2Fee(OperationInterface $operation): float;
