@@ -20,12 +20,11 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
     private $currencyExchanger;
 
     public function __construct(
-        StorageInterface           $storage,
+        StorageInterface $storage,
         CurrencyExchangerInterface $currencyExchanger,
         MathServiceInterface $mathService,
-        float                      $feeValue
-    )
-    {
+        float $feeValue
+    ) {
         parent::__construct($mathService, $feeValue);
         $this->storage = $storage;
         $this->currencyExchanger = $currencyExchanger;
@@ -59,7 +58,10 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
             return $operation->getAmount();
         }
 
-        $operationAmountInBaseCurrency = $this->currencyExchanger->convert($operation->getAmount(), $operation->getCurrency());
+        $operationAmountInBaseCurrency = $this->currencyExchanger->convert(
+            $operation->getAmount(),
+            $operation->getCurrency()
+        );
 
         $amountsSum = $this->mathService->add($amountsSum, $operationAmountInBaseCurrency);
 

@@ -9,7 +9,7 @@ use SergeiIvchenko\CommissionTask\Contracts\OperationInterface;
 
 class DepositeFeeCalculateStrategy extends AbstractFeeCalculateStrategy
 {
-    function canApply(OperationInterface $operation): bool
+    public function canApply(OperationInterface $operation): bool
     {
         return 'deposit' === $operation->getOperationType();
     }

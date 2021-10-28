@@ -46,6 +46,6 @@ class IOService implements IOServiceInterface
 
     public function outputData(string $data): void
     {
-        fwrite($this->fdOutput, $data . "\r\n");
+        fwrite($this->fdOutput, sprintf("%s\r\n", $data));
     }
 }

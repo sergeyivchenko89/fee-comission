@@ -27,7 +27,7 @@ class SimpleStorage implements StorageInterface
 
     public function getKey(OperationInterface $operation): string
     {
-        return $operation->getUserId() . '|' . $operation->getOperationType();
+        return sprintf('%d|%s', $operation->getUserId(), $operation->getOperationType());
     }
 
     public function getRelatedOperations(OperationInterface $operation): array
@@ -45,7 +45,7 @@ class SimpleStorage implements StorageInterface
             ($operationDate->diff($this->weekStart)->days > 7)
         ) {
             $this->dict = [];
-            $this->weekStart = new DateTime($operation->getDate() . ' monday this week');
+            $this->weekStart = new DateTime(sprintf('%s monday this week', $operation->getDate()));
         }
     }
 }

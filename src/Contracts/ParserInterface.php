@@ -6,5 +6,5 @@ namespace SergeiIvchenko\CommissionTask\Contracts;
 
 interface ParserInterface
 {
-    function getOperation(string $stringData): OperationInterface;
+    public function getOperation(string $stringData): OperationInterface;
 }

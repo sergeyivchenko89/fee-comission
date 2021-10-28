@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SergeiIvchenko\CommissionTask\Service\CurrencyExchanger;
 
+use Exception;
 use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -21,13 +22,12 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
     public function __construct(
         CacheInterface $cache,
         MathServiceInterface $mathService,
-        string         $baseCurrency,
-        float          $baseNoFee,
-        string         $apiUrl,
-        string         $apiVersion,
-        string         $apiKey
-    )
-    {
+        string $baseCurrency,
+        float $baseNoFee,
+        string $apiUrl,
+        string $apiVersion,
+        string $apiKey
+    ) {
         parent::__construct($mathService, $baseCurrency, $baseNoFee);
 
         $this->cache = $cache;
@@ -36,11 +36,10 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
         $this->apiVersion = $apiVersion;
     }
 
-    function convert(float $amount, string $currency, bool $reverse = false): float
+    public function convert(float $amount, string $currency, bool $reverse = false): float
     {
-        $key = $currency . '|' . $this->getBaseCurrency();
+        $key = sprintf('%s|%s', $currency, $this->getBaseCurrency());
         $value = $this->cache->get($key, function (ItemInterface $item) use ($currency) {
-
             if ($currency === $this->getBaseCurrency()) {
                 return 1;
             }
@@ -50,15 +49,14 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
 
             /* Строим ендпоинт для запроса. */
             $currency = strtoupper($currency);
-            $requestUrl = implode('/', [
-                    $this->apiUrl,
-                    $this->apiVersion
-                ]) . '?' .
-                implode('&', [
-                    'access_key=' . $this->apiKey,
-                    'symbols=' . $currency,
-                    'base=' . $this->getBaseCurrency()
-                ]);
+            $requestUrl = sprintf(
+                '%s/%s?access_key=%s&symbols=%s&base=%s',
+                $this->apiUrl,
+                $this->apiVersion,
+                $this->apiKey,
+                $currency,
+                $this->getBaseCurrency()
+            );
 
             /* Запрос. */
             $ch = curl_init();
@@ -72,12 +70,12 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
             curl_close($ch);
 
             if (empty($result['rates'])) {
-                throw new \Exception('Got empty data from exchange rates service.');
+                throw new Exception('Got empty data from exchange rates service.');
             }
 
             return $result['rates'][$currency];
         });
 
-        return call_user_func_array([$this->mathService, $reverse ? 'div': 'mul'], [$amount, $value]);
+        return call_user_func_array([$this->mathService, $reverse ? 'div' : 'mul'], [$amount, $value]);
     }
 }

@@ -16,7 +16,6 @@ class HelperService implements HelperServiceInterface
 
     protected function __construct()
     {
-
     }
 
     public static function get(): HelperServiceInterface

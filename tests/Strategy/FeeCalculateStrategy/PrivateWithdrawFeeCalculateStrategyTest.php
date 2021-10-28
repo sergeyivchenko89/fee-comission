@@ -74,6 +74,14 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
         $this->assertSame(0.0, $strategy->getFee($testedOperation));
     }
 
+    protected function getOperationFromArray(array $data, int $getCurrencyQueriesCount): OperationInterface
+    {
+        $operationMock = $this->createMock(OperationInterface::class);
+        $operationMock->expects($this->exactly(1))->method('getAmount')->willReturn($data[2]);
+        $operationMock->expects($this->exactly($getCurrencyQueriesCount))->method('getCurrency')->willReturn($data[3]);
+        return $operationMock;
+    }
+
     public function testGetFeeWithThreeItemsInStorage(): void
     {
         //Declare Mock objects
@@ -228,13 +236,5 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
 
         $strategy = new PrivateWithdrawFeeCalculateStrategy($storage, $currencyExchangerService, $mathService, 0.003);
         $this->assertSame(0.6, $strategy->getFee($testedOperation));
-    }
-
-    protected function getOperationFromArray(array $data, int $getCurrencyQueriesCount): OperationInterface
-    {
-        $operationMock = $this->createMock(OperationInterface::class);
-        $operationMock->expects($this->exactly(1))->method('getAmount')->willReturn($data[2]);
-        $operationMock->expects($this->exactly($getCurrencyQueriesCount))->method('getCurrency')->willReturn($data[3]);
-        return $operationMock;
     }
 }

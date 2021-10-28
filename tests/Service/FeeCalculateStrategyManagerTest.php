@@ -51,8 +51,7 @@ class FeeCalculateStrategyManagerTest extends TestCase
 
         $manager = new FeeCalculateStrategyManager();
 
-        foreach ($strategiesData as $strategyData)
-        {
+        foreach ($strategiesData as $strategyData) {
             $strategy = $this->createMock(FeeCalculateStrategyInterface::class);
             $strategy->method('canApply')->willReturn($strategyData[0]);
             $strategy->method('getFee')->willReturn($strategyData[1]);
@@ -85,8 +84,7 @@ class FeeCalculateStrategyManagerTest extends TestCase
 
         $manager = new FeeCalculateStrategyManager();
 
-        foreach ($strategiesData as $strategyData)
-        {
+        foreach ($strategiesData as $strategyData) {
             $strategy = $this->createMock(FeeCalculateStrategyInterface::class);
             $strategy->method('canApply')->willReturn($strategyData[0]);
             $strategy->method('getFee')->willReturn($strategyData[1]);

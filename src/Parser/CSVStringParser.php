@@ -22,7 +22,7 @@ class CSVStringParser implements ParserInterface
         return self::$instance;
     }
 
-    function getOperation(string $stringData): OperationInterface
+    public function getOperation(string $stringData): OperationInterface
     {
         $parts = explode(',', $stringData);
         return new OperationItem(

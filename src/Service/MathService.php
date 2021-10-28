@@ -39,6 +39,6 @@ class MathService implements MathServiceInterface
 
     public function comp(float $leftOperand, float $rightOperand): int
     {
-        return bccomp((string) $leftOperand, (string) $rightOperand, 10);
+        return bccomp((string)$leftOperand, (string)$rightOperand, 10);
     }
 }
