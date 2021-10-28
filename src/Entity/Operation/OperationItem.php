@@ -31,10 +31,10 @@ class OperationItem implements OperationInterface
     ) {
         $this->date = $date;
         $this->userId = $userId;
-        $this->clientType = strtolower($clientType);
-        $this->operationType = strtolower($operationType);
+        $this->clientType = strtoupper($clientType);
+        $this->operationType = strtoupper($operationType);
         $this->amount = $amount;
-        $this->currency = strtolower($currency);
+        $this->currency = strtoupper($currency);
     }
 
     public function getDate(): string

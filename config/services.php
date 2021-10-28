@@ -16,6 +16,8 @@ use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\BusinessWithdraw
 use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\DepositFeeCalculateStrategy;
 use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\PrivateWithdrawFeeCalculateStrategy;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 return array(
     /** Parameters **/
@@ -38,13 +40,11 @@ return array(
         return new MathService($container->get('parameters.calculation_accuracy'));
     },
     CurrencyExchanger::class => DI\autowire()
-        ->constructorParameter('cache', DI\get('currency_cache'))
         ->constructorParameter('baseCurrency', DI\get('parameters.base_currency'))
-        ->constructorParameter('baseNoFee', DI\get('parameters.base_no_fee'))
-        ->constructorParameter('apiUrl', DI\get('parameters.exchange_rates_api.url'))
-        ->constructorParameter('apiVersion', DI\get('parameters.exchange_rates_api.version'))
-        ->constructorParameter('apiKey', DI\get('parameters.exchange_rates_api.key')),
+        ->constructorParameter('baseNoFee', DI\get('parameters.base_no_fee')),
     CurrencyExchangerInterface::class => DI\get(CurrencyExchanger::class),
+
+    //Fee calculate strategies
     DepositFeeCalculateStrategy::class => DI\autowire()
         ->constructorParameter('feeValue', DI\get('parameters.fee_value.deposit_strategy')),
     PrivateWithdrawFeeCalculateStrategy::class => DI\autowire()
@@ -56,10 +56,26 @@ return array(
         ->method('addStrategy', DI\get(PrivateWithdrawFeeCalculateStrategy::class))
         ->method('addStrategy', DI\get(BusinessWithdrawFeeCalculateStrategy::class)),
     FeeCalculateStrategyManagerInterface::class => DI\get(FeeCalculateStrategyManager::class),
+
+
     TaskService::class => function (ContainerInterface $container) {
         return new TaskService(
             $container->get(FeeCalculateStrategyManagerInterface::class),
             $container->get(StorageInterface::class)
         );
-    }
+    },
+
+    //HTTPClient
+    HttpClient::class => DI\factory(function ($apiKey, $baseCurrency) {
+        var_dump($apiKey);
+        return HttpClient::createForBaseUri($_SERVER['EXCHANGE_RATE_API_BASE_URI'], [
+            'query' => [
+                'access_key' => $apiKey,
+                'base' => DI\get('parameters.base_currency')
+            ]
+        ]);
+    })
+        ->parameter('apiKey', DI\get('parameters.exchange_rates_api.key'))
+        ->parameter('baseCurrency', DI\get('parameters.base_currency')),
+    HttpClientInterface::class => DI\get(HttpClient::class)
 );

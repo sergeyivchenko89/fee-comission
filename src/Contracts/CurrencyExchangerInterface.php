@@ -7,9 +7,9 @@ namespace SergeiIvchenko\CommissionTask\Contracts;
 
 interface CurrencyExchangerInterface
 {
-    public const EUR = 'eur';
-    public const USD = 'usd';
-    public const JPY = 'jpy';
+    public const EUR = 'EUR';
+    public const USD = 'USD';
+    public const JPY = 'JPY';
 
     public const ACCURACY = 4;
 

@@ -4,78 +4,53 @@ declare(strict_types=1);
 
 namespace SergeiIvchenko\CommissionTask\Service\CurrencyExchanger;
 
-use Exception;
 use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
+use SergeiIvchenko\CommissionTask\Exception\CurrencyExchangerException;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class CurrencyExchanger extends AbstractCurrencyExchanger
 {
-    private $cache;
+    /**
+     * @var HttpClientInterface
+     */
+    private $httpClient;
 
-    private $apiUrl;
-
-    private $apiVersion;
-
-    private $apiKey;
+    private $rates = [];
 
     public function __construct(
-        CacheInterface $cache,
         MathServiceInterface $mathService,
+        HttpClientInterface $httpClient,
         string $baseCurrency,
-        float $baseNoFee,
-        string $apiUrl,
-        string $apiVersion,
-        string $apiKey
+        float $baseNoFee
     ) {
         parent::__construct($mathService, $baseCurrency, $baseNoFee);
-
-        $this->cache = $cache;
-        $this->apiKey = $apiKey;
-        $this->apiUrl = $apiUrl;
-        $this->apiVersion = $apiVersion;
+        $this->httpClient = $httpClient;
     }
 
     public function convert(float $amount, string $currency, bool $reverse = false): float
     {
-        $key = sprintf('%s|%s', $currency, $this->getBaseCurrency());
-        $value = $this->cache->get($key, function (ItemInterface $item) use ($currency) {
-            if ($currency === $this->getBaseCurrency()) {
-                return 1;
+        if ($currency === $this->getBaseCurrency()) {
+            return $amount;
+        }
+
+        if (empty($this->rates)) {
+            $response = $this->httpClient->request('GET', 'latest')->toArray();
+
+            if (true === ($response['success'] ?? false)) {
+                $this->rates = $response['rates'];
+            } elseif (isset($response['success'])) {
+                throw new CurrencyExchangerException($response['error']['info']);
+            } else {
+                throw new CurrencyExchangerException('Error retrieving data from the currency service.');
             }
+        }
 
-            /* закешируем на час. */
-            $item->expiresAfter(3600);
-
-            /* Строим ендпоинт для запроса. */
-            $currency = strtoupper($currency);
-            $requestUrl = sprintf(
-                '%s/%s?access_key=%s&symbols=%s&base=%s',
-                $this->apiUrl,
-                $this->apiVersion,
-                $this->apiKey,
-                $currency,
-                $this->getBaseCurrency()
+        if (empty($this->rates)) {
+            throw new CurrencyExchangerException(
+                sprintf('Cannot find currency rate for %s and %s.', $currency, $this->getBaseCurrency())
             );
+        }
 
-            /* Запрос. */
-            $ch = curl_init();
-            curl_setopt_array($ch, [
-                CURLOPT_URL => $requestUrl,
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_CUSTOMREQUEST => 'GET'
-            ]);
-            $result = curl_exec($ch);
-            $result = json_decode($result, true);
-            curl_close($ch);
-
-            if (empty($result['rates'])) {
-                throw new Exception('Got empty data from exchange rates service.');
-            }
-
-            return $result['rates'][$currency];
-        });
-
-        return call_user_func_array([$this->mathService, $reverse ? 'div' : 'mul'], [$amount, $value]);
+        return call_user_func_array([$this->mathService, $reverse ? 'div' : 'mul'], [$amount, $this->rates[$currency]]);
     }
 }

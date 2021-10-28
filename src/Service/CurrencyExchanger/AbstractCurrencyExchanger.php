@@ -19,7 +19,7 @@ abstract class AbstractCurrencyExchanger implements CurrencyExchangerInterface
     public function __construct(MathServiceInterface $mathService, string $baseCurrency, float $baseNoFee)
     {
         $this->mathService = $mathService;
-        $this->baseCurrency = strtolower($baseCurrency);
+        $this->baseCurrency = strtoupper($baseCurrency);
         $this->baseNoFee = $baseNoFee;
     }
 
