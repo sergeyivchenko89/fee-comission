@@ -8,6 +8,7 @@ namespace SergeiIvchenko\CommissionTask\Contracts;
 interface FeeCalculateStrategyInterface
 {
     public const WITHDRAW = 'withdraw';
+    public const DEPOSIT = 'deposit';
     public const PRIVATE = 'private';
     public const BUSINESS = 'business';
 

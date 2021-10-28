@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SergeiIvchenko\CommissionTask\Tests\FeeCalculateStrategy\Strategy;
+namespace SergeiIvchenko\CommissionTask\Tests\Strategy\FeeCalculateStrategy;
 
 use PHPUnit\Framework\TestCase;
 use SergeiIvchenko\CommissionTask\Contracts\CurrencyExchangerInterface;
@@ -10,7 +10,6 @@ use SergeiIvchenko\CommissionTask\Contracts\FeeCalculateStrategyInterface;
 use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
 use SergeiIvchenko\CommissionTask\Contracts\OperationInterface;
 use SergeiIvchenko\CommissionTask\Contracts\StorageInterface;
-use SergeiIvchenko\CommissionTask\Service\FakeCurrencyExchanger;
 use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\PrivateWithdrawFeeCalculateStrategy;
 
 class PrivateWithdrawFeeCalculateStrategyTest extends TestCase

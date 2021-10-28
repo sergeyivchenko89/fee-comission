@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 
-namespace SergeiIvchenko\CommissionTask\Tests\FeeCalculateStrategy\Strategy;
+namespace SergeiIvchenko\CommissionTask\Tests\Strategy\FeeCalculateStrategy;
 
 use PHPUnit\Framework\TestCase;
 use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
 use SergeiIvchenko\CommissionTask\Contracts\OperationInterface;
-use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\DepositeFeeCalculateStrategy;
+use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\DepositFeeCalculateStrategy;
 
-class DepositeFeeCalculateStrategyTest extends TestCase
+class DepositFeeCalculateStrategyTest extends TestCase
 {
     public function testCanApply()
     {
@@ -18,7 +18,7 @@ class DepositeFeeCalculateStrategyTest extends TestCase
         $operation = $this->createMock(OperationInterface::class);
         $operation->expects($this->once())->method('getOperationType')->willReturn('deposit');
 
-        $strategy = new DepositeFeeCalculateStrategy($mathService, 0.005);
+        $strategy = new DepositFeeCalculateStrategy($mathService, 0.005);
         $this->assertTrue($strategy->canApply($operation));
     }
 
@@ -27,7 +27,7 @@ class DepositeFeeCalculateStrategyTest extends TestCase
         $mathService = $this->createMock(MathServiceInterface::class);
         $operation = $this->createMock(OperationInterface::class);
         $operation->expects($this->once())->method('getAmount')->willReturn(1000);
-        $strategy = new DepositeFeeCalculateStrategy($mathService, 0.005);
+        $strategy = new DepositFeeCalculateStrategy($mathService, 0.005);
 
         //$mathService behavior
         $mathService->expects($this->exactly(1))->method('mul')->withConsecutive([1000.0, 0.005])

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-namespace SergeiIvchenko\CommissionTask\Tests\FeeCalculateStrategy\Strategy;
+namespace SergeiIvchenko\CommissionTask\Tests\Strategy\FeeCalculateStrategy;
 
 use PHPUnit\Framework\TestCase;
 use SergeiIvchenko\CommissionTask\Contracts\FeeCalculateStrategyInterface;

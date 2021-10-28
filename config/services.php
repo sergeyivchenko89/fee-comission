@@ -8,13 +8,12 @@ use SergeiIvchenko\CommissionTask\Contracts\FeeCalculateStrategyManagerInterface
 use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
 use SergeiIvchenko\CommissionTask\Contracts\StorageInterface;
 use SergeiIvchenko\CommissionTask\Service\CurrencyExchanger\CurrencyExchanger;
-use SergeiIvchenko\CommissionTask\Service\CurrencyExchanger\FakeCurrencyExchanger;
 use SergeiIvchenko\CommissionTask\Service\FeeCalculateStrategyManager;
 use SergeiIvchenko\CommissionTask\Service\MathService;
 use SergeiIvchenko\CommissionTask\Service\SimpleStorage;
 use SergeiIvchenko\CommissionTask\Service\TaskService;
 use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\BusinessWithdrawFeeCalculateStrategy;
-use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\DepositeFeeCalculateStrategy;
+use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\DepositFeeCalculateStrategy;
 use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\PrivateWithdrawFeeCalculateStrategy;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -24,7 +23,7 @@ return array(
     'parameters.base_no_fee' => 1000,
     'parameters.calculation_accuracy' => 2,
 
-    'parameters.fee_value.deposite_strategy' => 0.0003,
+    'parameters.fee_value.deposit_strategy' => 0.0003,
     'parameters.fee_value.private_withdraw' => 0.003,
     'parameters.fee_value.business_withdraw' => 0.005,
 
@@ -46,14 +45,14 @@ return array(
         ->constructorParameter('apiVersion', DI\get('parameters.exchange_rates_api.version'))
         ->constructorParameter('apiKey', DI\get('parameters.exchange_rates_api.key')),
     CurrencyExchangerInterface::class => DI\get(CurrencyExchanger::class),
-    DepositeFeeCalculateStrategy::class => DI\autowire()
-        ->constructorParameter('feeValue', DI\get('parameters.fee_value.deposite_strategy')),
+    DepositFeeCalculateStrategy::class => DI\autowire()
+        ->constructorParameter('feeValue', DI\get('parameters.fee_value.deposit_strategy')),
     PrivateWithdrawFeeCalculateStrategy::class => DI\autowire()
         ->constructorParameter('feeValue', DI\get('parameters.fee_value.private_withdraw')),
     BusinessWithdrawFeeCalculateStrategy::class => DI\autowire()
         ->constructorParameter('feeValue', DI\get('parameters.fee_value.business_withdraw')),
     FeeCalculateStrategyManager::class => DI\create()
-        ->method('addStrategy', DI\get(DepositeFeeCalculateStrategy::class))
+        ->method('addStrategy', DI\get(DepositFeeCalculateStrategy::class))
         ->method('addStrategy', DI\get(PrivateWithdrawFeeCalculateStrategy::class))
         ->method('addStrategy', DI\get(BusinessWithdrawFeeCalculateStrategy::class)),
     FeeCalculateStrategyManagerInterface::class => DI\get(FeeCalculateStrategyManager::class),
