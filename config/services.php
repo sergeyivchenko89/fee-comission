@@ -31,7 +31,7 @@ return array(
 
     'parameters.exchange_rates_api.url' => 'http://api.exchangeratesapi.io/v1',
     'parameters.exchange_rates_api.version' => 'latest',
-    'parameters.exchange_rates_api.key' => $_SERVER['EXCHANGE_RATE_API_KEY'],
+    'parameters.exchange_rates_api.key' => '825f95bd9432d91ed6ceb33e6b764929',
 
     /** Services. */
     StorageInterface::class => new SimpleStorage(),
@@ -66,15 +66,16 @@ return array(
     },
 
     //HTTPClient
-    HttpClient::class => DI\factory(function ($apiKey, $baseCurrency) {
-        return HttpClient::createForBaseUri($_SERVER['EXCHANGE_RATE_API_BASE_URI'], [
+    HttpClient::class => DI\factory(function ($apiUri, $apiKey, $baseCurrency) {
+        return HttpClient::createForBaseUri($apiUri, [
             'query' => [
                 'access_key' => $apiKey,
-                'base' => DI\get('parameters.base_currency')
+                'base' => $baseCurrency
             ]
         ]);
     })
         ->parameter('apiKey', DI\get('parameters.exchange_rates_api.key'))
-        ->parameter('baseCurrency', DI\get('parameters.base_currency')),
+        ->parameter('baseCurrency', DI\get('parameters.base_currency'))
+        ->parameter('apiUri', DI\get('parameters.exchange_rates_api.url')),
     HttpClientInterface::class => DI\get(HttpClient::class)
 );

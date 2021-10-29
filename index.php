@@ -12,9 +12,6 @@ require __DIR__.'/vendor/autoload.php';
 
 $filePath = $argv[1];
 
-/* Load dotenv. */
-(new Dotenv())->load(__DIR__ . '/.env');
-
 /* Load our DI container. */
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->addDefinitions(__DIR__ . '/config/services.php');
