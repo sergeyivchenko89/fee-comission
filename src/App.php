@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SergeiIvchenko\CommissionTask;
 
 use DI\ContainerBuilder;
+use Exception;
+use Psr\Log\LoggerInterface;
 use SergeiIvchenko\CommissionTask\Contracts\OperationInterface;
 use SergeiIvchenko\CommissionTask\Service\IOService;
 use SergeiIvchenko\CommissionTask\Service\TaskService;
@@ -19,10 +21,16 @@ class App
         $container = $containerBuilder->build();
 
         $operationTaskService = $container->get(TaskService::class);
-        $ioService = new IOService($inputFilePath, $outputFilePath);
-        /** @var OperationInterface $operation */
-        foreach ($ioService->getRawItemData() as $operation) {
-            $ioService->outputData((string)$operationTaskService->getFee($operation));
+        $logger = $container->get(LoggerInterface::class);
+
+        try {
+            $ioService = new IOService($inputFilePath, $outputFilePath);
+            /** @var OperationInterface $operation */
+            foreach ($ioService->getRawItemData() as $operation) {
+                $ioService->outputData((string)$operationTaskService->getFee($operation));
+            }
+        } catch (Exception $e) {
+            $logger->error($e->getMessage());
         }
     }
 }

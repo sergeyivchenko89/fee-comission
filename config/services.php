@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use SergeiIvchenko\CommissionTask\Contracts\CurrencyExchangerInterface;
 use SergeiIvchenko\CommissionTask\Contracts\FeeCalculateStrategyManagerInterface;
 use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
@@ -16,6 +19,7 @@ use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\BusinessWithdraw
 use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\DepositFeeCalculateStrategy;
 use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\PrivateWithdrawFeeCalculateStrategy;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -64,6 +68,14 @@ return array(
             $container->get(StorageInterface::class)
         );
     },
+
+    //Logger
+    Logger::class => function (ContainerInterface $c) {
+        $logger = new Logger('app');
+        $logger->pushHandler(new StreamHandler(__DIR__ . '/../var/dev.log', Logger::DEBUG));
+        return $logger;
+    },
+    LoggerInterface::class => DI\get(Logger::class),
 
     //HTTPClient
     HttpClient::class => DI\factory(function ($apiUri, $apiKey, $baseCurrency) {
