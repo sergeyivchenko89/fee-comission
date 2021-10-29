@@ -5,47 +5,46 @@ declare(strict_types=1);
 
 namespace SergeiIvchenko\CommissionTask\Service;
 
-use Exception;
 use SergeiIvchenko\CommissionTask\Contracts\IOServiceInterface;
 use SergeiIvchenko\CommissionTask\Exception\FileNotFoundException;
 use SergeiIvchenko\CommissionTask\Parser\CSVStringParser;
 
 class IOService implements IOServiceInterface
 {
-    private $fdInput;
+    private $fInput;
 
-    private $fdOutput;
+    private $fOutput;
 
     public function __construct(string $inputFileName, string $outputFileName)
     {
-        try {
-            if (!file_exists($inputFileName)) {
-                throw new FileNotFoundException($inputFileName);
-            }
+        $this->fInput = $inputFileName;
+        $this->fOutput = $outputFileName;
 
-            if (file_exists($outputFileName)) {
-                unlink($outputFileName);
-            }
-
-            $this->fdInput = fopen($inputFileName, 'r');
-            $this->fdOutput = fopen($outputFileName, 'a');
-        } catch (Exception $e) {
-            if (file_exists($outputFileName)) {
-                unlink($outputFileName);
-            }
+        if (file_exists($this->fOutput)) {
+            unlink($this->fOutput);
         }
     }
 
     public function getRawItemData()
     {
-        while (false !== ($line = fgets($this->fdInput))) {
-            $line = trim($line);
-            yield CSVStringParser::getInstance()->getOperation($line);
+        if (!file_exists($this->fInput)) {
+            throw new FileNotFoundException($this->fInput);
+        }
+
+        $fd = fopen($this->fInput, 'r');
+
+        try {
+            while (false !== ($line = fgets($fd))) {
+                $line = trim($line);
+                yield CSVStringParser::getInstance()->getOperation($line);
+            }
+        } finally {
+            fclose($fd);
         }
     }
 
     public function outputData(string $data): void
     {
-        fwrite($this->fdOutput, sprintf("%s\r\n", $data));
+        file_put_contents($this->fOutput, sprintf("%s\r\n", $data), FILE_APPEND);
     }
 }
