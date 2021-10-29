@@ -14,7 +14,7 @@ class DepositFeeCalculateStrategy extends AbstractFeeCalculateStrategy
         return strtolower(self::DEPOSIT) === strtolower($operation->getOperationType());
     }
 
-    protected function getAmount2Fee(OperationInterface $operation): float
+    protected function getAmount2Fee(OperationInterface $operation): string
     {
         return $operation->getAmount();
     }

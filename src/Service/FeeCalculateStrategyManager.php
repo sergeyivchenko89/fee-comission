@@ -24,7 +24,7 @@ class FeeCalculateStrategyManager implements FeeCalculateStrategyManagerInterfac
         $this->strategies[] = $strategy;
     }
 
-    public function getFee(OperationInterface $operation): float
+    public function getFee(OperationInterface $operation): string
     {
         /** @var FeeCalculateStrategyInterface $strategy */
         foreach ($this->strategies as $strategy) {

@@ -18,7 +18,7 @@ class DepositFeeCalculateStrategyTest extends TestCase
         $operation = $this->createMock(OperationInterface::class);
         $operation->expects($this->once())->method('getOperationType')->willReturn('deposit');
 
-        $strategy = new DepositFeeCalculateStrategy($mathService, 0.005);
+        $strategy = new DepositFeeCalculateStrategy($mathService, '0.005');
         $this->assertTrue($strategy->canApply($operation));
     }
 
@@ -27,12 +27,12 @@ class DepositFeeCalculateStrategyTest extends TestCase
         $mathService = $this->createMock(MathServiceInterface::class);
         $operation = $this->createMock(OperationInterface::class);
         $operation->expects($this->once())->method('getAmount')->willReturn(1000);
-        $strategy = new DepositFeeCalculateStrategy($mathService, 0.005);
+        $strategy = new DepositFeeCalculateStrategy($mathService, '0.005');
 
         //$mathService behavior
         $mathService->expects($this->exactly(1))->method('mul')->withConsecutive([1000.0, 0.005])
             ->willReturnOnConsecutiveCalls(5.0);
 
-        $this->assertEquals(5.0, $strategy->getFee($operation));
+        $this->assertEquals('5.0', $strategy->getFee($operation));
     }
 }

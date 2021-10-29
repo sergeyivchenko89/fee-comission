@@ -14,5 +14,5 @@ interface FeeCalculateStrategyInterface
 
     public function canApply(OperationInterface $operation): bool;
 
-    public function getFee(OperationInterface $operation): float;
+    public function getFee(OperationInterface $operation): string;
 }

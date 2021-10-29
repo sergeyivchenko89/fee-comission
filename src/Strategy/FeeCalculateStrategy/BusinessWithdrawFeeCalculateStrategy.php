@@ -15,7 +15,7 @@ class BusinessWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
             && self::BUSINESS === $operation->getClientType();
     }
 
-    protected function getAmount2Fee(OperationInterface $operation): float
+    protected function getAmount2Fee(OperationInterface $operation): string
     {
         return $operation->getAmount();
     }

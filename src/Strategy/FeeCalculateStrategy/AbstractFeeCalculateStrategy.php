@@ -15,16 +15,16 @@ abstract class AbstractFeeCalculateStrategy implements FeeCalculateStrategyInter
 
     protected $mathService;
 
-    public function __construct(MathServiceInterface $mathService, float $feeValue)
+    public function __construct(MathServiceInterface $mathService, string $feeValue)
     {
         $this->mathService = $mathService;
         $this->feeValue = $feeValue;
     }
 
-    public function getFee(OperationInterface $operation): float
+    public function getFee(OperationInterface $operation): string
     {
         return $this->mathService->mul($this->getAmount2Fee($operation), $this->feeValue);
     }
 
-    abstract protected function getAmount2Fee(OperationInterface $operation): float;
+    abstract protected function getAmount2Fee(OperationInterface $operation): string;
 }

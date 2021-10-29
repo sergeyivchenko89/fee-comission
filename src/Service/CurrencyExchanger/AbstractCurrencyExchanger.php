@@ -16,16 +16,16 @@ abstract class AbstractCurrencyExchanger implements CurrencyExchangerInterface
 
     protected $baseNoFee;
 
-    public function __construct(MathServiceInterface $mathService, string $baseCurrency, float $baseNoFee)
+    public function __construct(MathServiceInterface $mathService, string $baseCurrency, string $baseNoFee)
     {
         $this->mathService = $mathService;
         $this->baseCurrency = strtoupper($baseCurrency);
         $this->baseNoFee = $baseNoFee;
     }
 
-    public function getBaseNoFee(): float
+    public function getBaseNoFee(): string
     {
-        return 1 === $this->mathService->comp($this->baseNoFee, 0) ? $this->baseNoFee : 0;
+        return 1 === $this->mathService->comp($this->baseNoFee, '0') ? $this->baseNoFee : 0;
     }
 
     public function getBaseCurrency(): string

@@ -29,7 +29,7 @@ class TaskService implements TaskServiceInterface
         $this->storage = $storage;
     }
 
-    public function getFee(OperationInterface $operation): float
+    public function getFee(OperationInterface $operation): string
     {
         $this->storage->invalidate($operation);
         $feeValue = $this->feeCalculateStrategyManager->getFee($operation);

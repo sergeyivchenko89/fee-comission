@@ -6,13 +6,13 @@ namespace SergeiIvchenko\CommissionTask\Contracts;
 
 interface MathServiceInterface
 {
-    public function add(float $leftOperand, float $rightOperand): float;
+    public function add(string $leftOperand, string $rightOperand): string;
 
-    public function sub(float $leftOperand, float $rightOperand): float;
+    public function sub(string $leftOperand, string $rightOperand): string;
 
-    public function mul(float $leftOperand, float $rightOperand): float;
+    public function mul(string $leftOperand, string $rightOperand): string;
 
-    public function div(float $leftOperand, float $rightOperand): float;
+    public function div(string $leftOperand, string $rightOperand): string;
 
-    public function comp(float $leftOperand, float $rightOperand): int;
+    public function comp(string $leftOperand, string $rightOperand): int;
 }

@@ -22,12 +22,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 return array(
     /** Parameters **/
     'parameters.base_currency' => CurrencyExchangerInterface::EUR,
-    'parameters.base_no_fee' => 1000,
+    'parameters.base_no_fee' => '1000',
     'parameters.calculation_accuracy' => 2,
 
-    'parameters.fee_value.deposit_strategy' => 0.0003,
-    'parameters.fee_value.private_withdraw' => 0.003,
-    'parameters.fee_value.business_withdraw' => 0.005,
+    'parameters.fee_value.deposit_strategy' => '0.0003',
+    'parameters.fee_value.private_withdraw' => '0.003',
+    'parameters.fee_value.business_withdraw' => '0.005',
 
     'parameters.exchange_rates_api.url' => 'http://api.exchangeratesapi.io/v1',
     'parameters.exchange_rates_api.version' => 'latest',
@@ -67,7 +67,6 @@ return array(
 
     //HTTPClient
     HttpClient::class => DI\factory(function ($apiKey, $baseCurrency) {
-        var_dump($apiKey);
         return HttpClient::createForBaseUri($_SERVER['EXCHANGE_RATE_API_BASE_URI'], [
             'query' => [
                 'access_key' => $apiKey,

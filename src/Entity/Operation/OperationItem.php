@@ -26,7 +26,7 @@ class OperationItem implements OperationInterface
         int $userId,
         string $clientType,
         string $operationType,
-        float $amount,
+        string $amount,
         string $currency
     ) {
         $this->date = $date;
@@ -57,7 +57,7 @@ class OperationItem implements OperationInterface
         return $this->operationType;
     }
 
-    public function getAmount(): float
+    public function getAmount(): string
     {
         return $this->amount;
     }

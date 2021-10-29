@@ -15,30 +15,30 @@ class MathService implements MathServiceInterface
         $this->scale = $scale;
     }
 
-    public function add(float $leftOperand, float $rightOperand): float
+    public function add(string $leftOperand, string $rightOperand): string
     {
-        return (float)bcadd((string)$leftOperand, (string)$rightOperand, $this->scale);
+        return bcadd($leftOperand, $rightOperand, $this->scale);
     }
 
-    public function sub(float $leftOperand, float $rightOperand): float
+    public function sub(string $leftOperand, string $rightOperand): string
     {
-        return (float)bcsub((string)$leftOperand, (string)$rightOperand, $this->scale);
+        return bcsub($leftOperand, $rightOperand, $this->scale);
     }
 
-    public function mul(float $leftOperand, float $rightOperand): float
+    public function mul(string $leftOperand, string $rightOperand): string
     {
         $result = bcmul((string)$leftOperand, (string)$rightOperand, 10);
-        return (float)bcmul($result, '1', $this->scale);
+        return bcmul($result, '1', $this->scale);
     }
 
-    public function div(float $leftOperand, float $rightOperand): float
+    public function div(string $leftOperand, string $rightOperand): string
     {
         $result = bcdiv((string)$leftOperand, (string)$rightOperand, 10);
-        return (float)bcmul($result, '1', $this->scale);
+        return bcmul($result, '1', $this->scale);
     }
 
-    public function comp(float $leftOperand, float $rightOperand): int
+    public function comp(string $leftOperand, string $rightOperand): int
     {
-        return bccomp((string)$leftOperand, (string)$rightOperand, 10);
+        return bccomp($leftOperand, $rightOperand, 10);
     }
 }

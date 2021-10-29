@@ -13,9 +13,9 @@ interface CurrencyExchangerInterface
 
     public const ACCURACY = 4;
 
-    public function convert(float $amount, string $currency, bool $reverse = false): float;
+    public function convert(string $amount, string $currency, bool $reverse = false): string;
 
     public function getBaseCurrency(): string;
 
-    public function getBaseNoFee(): float;
+    public function getBaseNoFee(): string;
 }

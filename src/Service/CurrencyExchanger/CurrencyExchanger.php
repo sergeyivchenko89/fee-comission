@@ -21,13 +21,13 @@ class CurrencyExchanger extends AbstractCurrencyExchanger
         MathServiceInterface $mathService,
         HttpClientInterface $httpClient,
         string $baseCurrency,
-        float $baseNoFee
+        string $baseNoFee
     ) {
         parent::__construct($mathService, $baseCurrency, $baseNoFee);
         $this->httpClient = $httpClient;
     }
 
-    public function convert(float $amount, string $currency, bool $reverse = false): float
+    public function convert(string $amount, string $currency, bool $reverse = false): string
     {
         if ($currency === $this->getBaseCurrency()) {
             return $amount;

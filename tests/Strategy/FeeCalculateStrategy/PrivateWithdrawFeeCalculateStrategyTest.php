@@ -15,6 +15,7 @@ use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\PrivateWithdrawF
 class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
 {
     private const AMOUNT_BASE_NO_FEE = 1000;
+    private const FEE_VALUE = '0.003';
 
     public function testCanApply()
     {
@@ -29,7 +30,12 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
         $operation->expects($this->exactly(1))->method('getClientType')
             ->willReturn(FeeCalculateStrategyInterface::PRIVATE);
 
-        $strategy = new PrivateWithdrawFeeCalculateStrategy($storage, $currencyExchangerService, $mathService, 0.003);
+        $strategy = new PrivateWithdrawFeeCalculateStrategy(
+            $storage,
+            $currencyExchangerService,
+            $mathService,
+            self::FEE_VALUE
+        );
         $this->assertTrue($strategy->canApply($operation));
     }
 
@@ -54,23 +60,23 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
 
         //$mathService behavior
         $mathService->expects($this->exactly(2))->method('comp')
-            ->withConsecutive([0.0, self::AMOUNT_BASE_NO_FEE], [-800.0, 0.0])
-            ->willReturnOnConsecutiveCalls(-1.0, -1.0);
+            ->withConsecutive([0.0, self::AMOUNT_BASE_NO_FEE], ['-800.0', '0.0'])
+            ->willReturnOnConsecutiveCalls(-1, -1);
         $mathService->expects($this->exactly(1))->method('add')
             ->withConsecutive([0.0, 200.0])
             ->willReturnOnConsecutiveCalls(200.0);
         $mathService->expects($this->exactly(1))->method('sub')
             ->withConsecutive(
-                [200.0, 1000.0]
+                ['200.0', '1000.0']
             )
-            ->willReturnOnConsecutiveCalls(-800.0);
+            ->willReturnOnConsecutiveCalls('-800.0');
         $mathService->expects($this->exactly(1))->method('mul')
             ->withConsecutive(
                 [0.0, 0.003]
             )->willReturnOnConsecutiveCalls(0.0);
 
-        $strategy = new PrivateWithdrawFeeCalculateStrategy($storage, $currencyExchangerService, $mathService, 0.003);
-        $this->assertSame(0.0, $strategy->getFee($testedOperation));
+        $strategy = new PrivateWithdrawFeeCalculateStrategy($storage, $currencyExchangerService, $mathService, '0.003');
+        $this->assertSame('0', $strategy->getFee($testedOperation));
     }
 
     protected function getOperationFromArray(array $data, int $getCurrencyQueriesCount): OperationInterface
@@ -90,7 +96,7 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
         $testedOperation = $this->createMock(OperationInterface::class);
 
         //$operation behavior
-        $testedOperation->expects($this->exactly(1))->method('getAmount')->willReturn(200);
+        $testedOperation->expects($this->exactly(1))->method('getAmount')->willReturn('200');
 
         //$storage behavior
         $items = [];
@@ -106,8 +112,18 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
         }
         $storage->expects($this->exactly(1))->method('getRelatedOperations')->willReturn($items);
 
-        $strategy = new PrivateWithdrawFeeCalculateStrategy($storage, $currencyExchangerService, $mathService, 0.003);
-        $this->assertSame(0.0, $strategy->getFee($testedOperation));
+        //$mathService behavior
+        $mathService->expects($this->exactly(1))->method('mul')
+            ->withConsecutive(['200', '0.003'])
+            ->willReturn('0.6');
+
+        $strategy = new PrivateWithdrawFeeCalculateStrategy(
+            $storage,
+            $currencyExchangerService,
+            $mathService,
+            self::FEE_VALUE
+        );
+        $this->assertSame('0.6', $strategy->getFee($testedOperation));
     }
 
     public function testGetFeeWithLessThreeItemsInStorage1()
@@ -139,16 +155,24 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
         //$mathService behavior
         $mathService->expects($this->exactly(2))->method('add')
             ->withConsecutive([0.0, 200.0], [200., 200.]
-            )->willReturnOnConsecutiveCalls(200., 400.);
+            )->willReturnOnConsecutiveCalls('200.', '400.');
         $mathService->expects($this->exactly(2))->method('comp')
             ->withConsecutive([200., self::AMOUNT_BASE_NO_FEE], [-600.0, 0.0])
-            ->willReturnOnConsecutiveCalls(-1.0, -1.0);
+            ->willReturnOnConsecutiveCalls(-1, -1);
         $mathService->expects($this->exactly(1))->method('sub')
             ->withConsecutive([400., self::AMOUNT_BASE_NO_FEE])
-            ->willReturnOnConsecutiveCalls(-600.);
+            ->willReturnOnConsecutiveCalls('-600.');
+        $mathService->expects($this->exactly(1))->method('mul')
+            ->withConsecutive(['0', self::FEE_VALUE])
+            ->willReturnOnConsecutiveCalls('0');
 
-        $strategy = new PrivateWithdrawFeeCalculateStrategy($storage, $currencyExchangerService, $mathService, 0.003);
-        $this->assertSame(0.0, $strategy->getFee($testedOperation));
+        $strategy = new PrivateWithdrawFeeCalculateStrategy(
+            $storage,
+            $currencyExchangerService,
+            $mathService,
+            self::FEE_VALUE
+        );
+        $this->assertSame('0', $strategy->getFee($testedOperation));
     }
 
     public function testGetFeeWithLessThreeItemsInStorage2()
@@ -192,8 +216,13 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
             ->withConsecutive([100.0, 0.003])
             ->willReturnOnConsecutiveCalls(0.3);
 
-        $strategy = new PrivateWithdrawFeeCalculateStrategy($storage, $currencyExchangerService, $mathService, 0.003);
-        $this->assertSame(0.3, $strategy->getFee($testedOperation));
+        $strategy = new PrivateWithdrawFeeCalculateStrategy(
+            $storage,
+            $currencyExchangerService,
+            $mathService,
+            self::FEE_VALUE
+        );
+        $this->assertSame('0.3', $strategy->getFee($testedOperation));
     }
 
     public function testGetFeeWithLessThreeItemsInStorage3()
@@ -233,7 +262,12 @@ class PrivateWithdrawFeeCalculateStrategyTest extends TestCase
             ->withConsecutive([200.0, 0.003])
             ->willReturnOnConsecutiveCalls(0.6);
 
-        $strategy = new PrivateWithdrawFeeCalculateStrategy($storage, $currencyExchangerService, $mathService, 0.003);
-        $this->assertSame(0.6, $strategy->getFee($testedOperation));
+        $strategy = new PrivateWithdrawFeeCalculateStrategy(
+            $storage,
+            $currencyExchangerService,
+            $mathService,
+            self::FEE_VALUE
+        );
+        $this->assertSame('0.6', $strategy->getFee($testedOperation));
     }
 }

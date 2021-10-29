@@ -7,5 +7,5 @@ namespace SergeiIvchenko\CommissionTask\Contracts;
 
 interface TaskServiceInterface
 {
-    public function getFee(OperationInterface $operation): float;
+    public function getFee(OperationInterface $operation): string;
 }

@@ -14,7 +14,7 @@ interface OperationInterface
 
     public function getOperationType(): string;
 
-    public function getAmount(): float;
+    public function getAmount(): string;
 
     public function getCurrency(): string;
 }

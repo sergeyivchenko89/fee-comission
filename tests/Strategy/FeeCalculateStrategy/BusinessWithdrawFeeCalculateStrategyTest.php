@@ -13,7 +13,7 @@ use SergeiIvchenko\CommissionTask\Strategy\FeeCalculateStrategy\BusinessWithdraw
 
 class BusinessWithdrawFeeCalculateStrategyTest extends TestCase
 {
-    private const FEE_VALUE = 0.005;
+    private const FEE_VALUE = '0.005';
 
     public function testCanApply()
     {

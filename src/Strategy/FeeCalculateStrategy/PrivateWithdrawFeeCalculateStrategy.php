@@ -23,7 +23,7 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
         StorageInterface $storage,
         CurrencyExchangerInterface $currencyExchanger,
         MathServiceInterface $mathService,
-        float $feeValue
+        string $feeValue
     ) {
         parent::__construct($mathService, $feeValue);
         $this->storage = $storage;
@@ -36,7 +36,7 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
             && self::PRIVATE === $operation->getClientType();
     }
 
-    protected function getAmount2Fee(OperationInterface $operation): float
+    protected function getAmount2Fee(OperationInterface $operation): string
     {
         $finishedOperations = $this->storage->getRelatedOperations($operation);
 
@@ -44,7 +44,7 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
             return $operation->getAmount();
         }
 
-        $amountsSum = array_reduce($finishedOperations, function (float $prevValue, OperationInterface $operation) {
+        $amountsSum = array_reduce($finishedOperations, function (string $prevValue, OperationInterface $operation) {
             return $this->mathService->add(
                 $prevValue,
                 $this->currencyExchanger->convert(
@@ -52,7 +52,7 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
                     $operation->getCurrency()
                 )
             );
-        }, 0);
+        }, '0');
 
         if (0 < $this->mathService->comp($amountsSum, $this->currencyExchanger->getBaseNoFee())) {
             return $operation->getAmount();
@@ -66,7 +66,7 @@ class PrivateWithdrawFeeCalculateStrategy extends AbstractFeeCalculateStrategy
         $amountsSum = $this->mathService->add($amountsSum, $operationAmountInBaseCurrency);
 
         $amount2Fee = $this->mathService->sub($amountsSum, $this->currencyExchanger->getBaseNoFee());
-        $amount2Fee = (0 < $this->mathService->comp($amount2Fee, 0) ? $amount2Fee : 0);
+        $amount2Fee = (0 < $this->mathService->comp($amount2Fee, '0') ? $amount2Fee : '0');
 
         return $this->currencyExchanger->convert($amount2Fee, $operation->getCurrency(), true);
     }

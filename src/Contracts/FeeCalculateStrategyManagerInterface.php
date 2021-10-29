@@ -10,6 +10,6 @@ interface FeeCalculateStrategyManagerInterface
 
     public function addStrategy(FeeCalculateStrategyInterface $strategy): void;
 
-    public function getFee(OperationInterface $operation): float;
+    public function getFee(OperationInterface $operation): string;
 
 }

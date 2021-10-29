@@ -30,7 +30,7 @@ class CSVStringParser implements ParserInterface
             (int)$parts[1],
             $parts[2],
             $parts[3],
-            (float)$parts[4],
+            $parts[4],
             $parts[5]
         );
     }
