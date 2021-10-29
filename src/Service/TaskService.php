@@ -31,21 +31,9 @@ class TaskService implements TaskServiceInterface
 
     public function getFee(OperationInterface $operation): float
     {
-        /**
-         * Проверим акутальность сохраненных данных о предыдущих операциях.
-         */
         $this->storage->invalidate($operation);
-
-        /**
-         * Получим величину комиссии.
-         */
         $feeValue = $this->feeCalculateStrategyManager->getFee($operation);
-
-        /**
-         * Сохраним данные об операции в хранилище.
-         */
         $this->storage->save($operation);
-
         return $feeValue;
     }
 }

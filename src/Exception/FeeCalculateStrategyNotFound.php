@@ -13,7 +13,7 @@ class FeeCalculateStrategyNotFound extends Exception
     public function __construct(OperationInterface $operation)
     {
         parent::__construct(
-            "Стратегия для {$operation->getClientType()} клиента и {$operation->getOperationType()} операции не найдена."
+            "Strategy for {$operation->getClientType()} client and {$operation->getOperationType()} operation not found."
         );
     }
 }
