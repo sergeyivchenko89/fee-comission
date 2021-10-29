@@ -5,4 +5,4 @@ docker run --rm \
   -w /var/www/html/www-data \
   -u $(id -u):$(id -g) \
   demo-cli-php:1.0 \
-  /bin/bash -c "composer install && php index.php ./input.csv ./output.csv"
+  /bin/bash -c "composer install && php index.php ./input.csv ./output.csv && cat ./output.csv"
