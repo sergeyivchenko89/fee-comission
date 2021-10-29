@@ -9,7 +9,9 @@ use Psr\Log\LoggerInterface;
 use SergeiIvchenko\CommissionTask\Contracts\CurrencyExchangerInterface;
 use SergeiIvchenko\CommissionTask\Contracts\FeeCalculateStrategyManagerInterface;
 use SergeiIvchenko\CommissionTask\Contracts\MathServiceInterface;
+use SergeiIvchenko\CommissionTask\Contracts\ParserInterface;
 use SergeiIvchenko\CommissionTask\Contracts\StorageInterface;
+use SergeiIvchenko\CommissionTask\Parser\CSVStringParser;
 use SergeiIvchenko\CommissionTask\Service\CurrencyExchanger\CurrencyExchanger;
 use SergeiIvchenko\CommissionTask\Service\FeeCalculateStrategyManager;
 use SergeiIvchenko\CommissionTask\Service\MathService;
@@ -76,6 +78,10 @@ return array(
         return $logger;
     },
     LoggerInterface::class => DI\get(Logger::class),
+
+    //Parser
+    CSVStringParser::class => DI\create(CSVStringParser::class),
+    ParserInterface::class => DI\get(CSVStringParser::class),
 
     //HTTPClient
     HttpClient::class => DI\factory(function ($apiUri, $apiKey, $baseCurrency) {

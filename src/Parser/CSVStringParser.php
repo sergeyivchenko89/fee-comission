@@ -11,17 +11,6 @@ use SergeiIvchenko\CommissionTask\Entity\Operation\OperationItem;
 
 class CSVStringParser implements ParserInterface
 {
-    private static $instance;
-
-    public static function getInstance(): self
-    {
-        if (null === self::$instance) {
-            self::$instance = new CSVStringParser();
-        }
-
-        return self::$instance;
-    }
-
     public function getOperation(string $stringData): OperationInterface
     {
         $parts = explode(',', $stringData);

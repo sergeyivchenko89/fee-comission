@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace SergeiIvchenko\CommissionTask\Service;
 
 use SergeiIvchenko\CommissionTask\Contracts\IOServiceInterface;
+use SergeiIvchenko\CommissionTask\Contracts\ParserInterface;
 use SergeiIvchenko\CommissionTask\Exception\FileNotFoundException;
 use SergeiIvchenko\CommissionTask\Parser\CSVStringParser;
 
@@ -15,10 +16,19 @@ class IOService implements IOServiceInterface
 
     private $fOutput;
 
-    public function __construct(string $inputFileName, string $outputFileName)
-    {
+    /**
+     * @var ParserInterface
+     */
+    private $parser;
+
+    public function __construct(
+        ParserInterface $parser,
+        string $inputFileName,
+        string $outputFileName
+    ) {
         $this->fInput = $inputFileName;
         $this->fOutput = $outputFileName;
+        $this->parser = $parser;
 
         if (file_exists($this->fOutput)) {
             unlink($this->fOutput);
@@ -36,7 +46,7 @@ class IOService implements IOServiceInterface
         try {
             while (false !== ($line = fgets($fd))) {
                 $line = trim($line);
-                yield CSVStringParser::getInstance()->getOperation($line);
+                yield $this->parser->getOperation($line);
             }
         } finally {
             fclose($fd);

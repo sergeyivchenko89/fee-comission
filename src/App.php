@@ -8,6 +8,7 @@ use DI\ContainerBuilder;
 use Exception;
 use Psr\Log\LoggerInterface;
 use SergeiIvchenko\CommissionTask\Contracts\OperationInterface;
+use SergeiIvchenko\CommissionTask\Contracts\ParserInterface;
 use SergeiIvchenko\CommissionTask\Service\IOService;
 use SergeiIvchenko\CommissionTask\Service\TaskService;
 
@@ -22,9 +23,10 @@ class App
 
         $operationTaskService = $container->get(TaskService::class);
         $logger = $container->get(LoggerInterface::class);
+        $parser = $container->get(ParserInterface::class);
 
         try {
-            $ioService = new IOService($inputFilePath, $outputFilePath);
+            $ioService = new IOService($parser, $inputFilePath, $outputFilePath);
             /** @var OperationInterface $operation */
             foreach ($ioService->getRawItemData() as $operation) {
                 $ioService->outputData((string)$operationTaskService->getFee($operation));
